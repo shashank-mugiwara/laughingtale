@@ -6,11 +6,13 @@ import (
 	"os"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"github.com/shashank-mugiwara/laughingtale/conf"
 )
 
 func InitKafkaConsumer() {
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers": "localhost:9092,localhost:9093",
+		"bootstrap.servers": conf.KafkaSetting.Host1 + ":" + conf.KafkaSetting.Port1 + "," +
+			conf.KafkaSetting.Host2 + ":" + conf.KafkaSetting.Port2,
 		"group.id":          "foo",
 		"auto.offset.reset": "smallest"})
 

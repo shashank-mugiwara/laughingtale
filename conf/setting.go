@@ -18,7 +18,16 @@ type Server struct {
 	HttpPort int
 }
 
+type Kafka struct {
+	Host1 string
+	Host2 string
+	Port1 string
+	Port2 string
+}
+
 var ServerSetting = &Server{}
+
+var KafkaSetting = &Kafka{}
 
 var cfg *ini.File
 
@@ -39,6 +48,7 @@ func SetUp(path string) {
 
 	mapTo("application", ApplicationSetting)
 	mapTo("server", ServerSetting)
+	mapTo("kafka", KafkaSetting)
 }
 
 func mapTo(section string, v interface{}) {
