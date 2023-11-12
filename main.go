@@ -16,7 +16,7 @@ func main() {
 	conf.InitEngine()
 	app := conf.GetLaughingTaleEngine()
 	initialize.InitRoutes()
-	initialize.InitKafkaConsumer()
+	initialize.InitClients()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)

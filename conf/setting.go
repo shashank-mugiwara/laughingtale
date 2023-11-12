@@ -26,9 +26,25 @@ type Kafka struct {
 	Port2   string
 }
 
+type Mongo struct {
+	Enabled    string
+	MasterNode string
+	Port       string
+}
+
+type Postgres struct {
+	Enabled    string
+	ReaderNode string
+	Port       string
+}
+
+var PostgresSetting = &Postgres{}
+
 var ServerSetting = &Server{}
 
 var KafkaSetting = &Kafka{}
+
+var MongoSetting = &Mongo{}
 
 var cfg *ini.File
 
@@ -50,6 +66,7 @@ func SetUp(path string) {
 	mapTo("application", ApplicationSetting)
 	mapTo("server", ServerSetting)
 	mapTo("kafka", KafkaSetting)
+	mapTo("mongo", MongoSetting)
 }
 
 func mapTo(section string, v interface{}) {
