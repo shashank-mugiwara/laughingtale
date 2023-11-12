@@ -19,10 +19,11 @@ type Server struct {
 }
 
 type Kafka struct {
-	Host1 string
-	Host2 string
-	Port1 string
-	Port2 string
+	Enabled string
+	Host1   string
+	Host2   string
+	Port1   string
+	Port2   string
 }
 
 var ServerSetting = &Server{}

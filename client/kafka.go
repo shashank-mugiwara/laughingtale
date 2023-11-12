@@ -10,6 +10,11 @@ import (
 )
 
 func InitKafkaConsumer() {
+
+	if conf.KafkaSetting.Enabled == "false" {
+		return
+	}
+
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers": conf.KafkaSetting.Host1 + ":" + conf.KafkaSetting.Port1 + "," +
 			conf.KafkaSetting.Host2 + ":" + conf.KafkaSetting.Port2,
