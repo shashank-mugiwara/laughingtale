@@ -9,6 +9,8 @@ import (
 
 	"github.com/shashank-mugiwara/laughingtale/conf"
 	"github.com/shashank-mugiwara/laughingtale/initialize"
+	"github.com/shashank-mugiwara/laughingtale/pkg/poller"
+	"github.com/shashank-mugiwara/laughingtale/pkg/type_config"
 )
 
 func main() {
@@ -17,6 +19,32 @@ func main() {
 	app := conf.GetLaughingTaleEngine()
 	initialize.InitRoutes()
 	initialize.InitClients()
+
+	sourceConfigContainer := &type_config.SourceConfigContainer{
+		Identifier: "randomIdentifier",
+		SourceConfig: []type_config.SourceConfig{
+			{
+				DbSchema:   "shield",
+				TableName:  "app_form",
+				PrimaryKey: "id",
+				FilterConfig: type_config.FilterConfig{
+					WhereQuery: "created_at >= NOW() - INTERVAL '60 days'",
+					Limit:      "100",
+				},
+			},
+			{
+				DbSchema:   "shield",
+				TableName:  "applicant",
+				PrimaryKey: "id",
+				FilterConfig: type_config.FilterConfig{
+					WhereQuery: "created_at >= NOW() - INTERVAL '60 days'",
+					Limit:      "100",
+				},
+			},
+		},
+	}
+
+	poller.PollData(sourceConfigContainer)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)

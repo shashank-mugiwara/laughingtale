@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/shashank-mugiwara/laughingtale/conf"
@@ -21,8 +22,11 @@ func InitPostgresPoller() {
 		return
 	}
 
+	dns := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s", conf.PostgresSetting.ReaderNode, conf.PostgresSetting.Username,
+		conf.PostgresSetting.Password, conf.PostgresSetting.Database, conf.PostgresSetting.Port, conf.PostgresSetting.SslEnabled)
+
 	db, err := gorm.Open(postgres.New(postgres.Config{
-		DSN:                  "host=localhost user=shashank.j password=root dbname=maindb port=5432 sslmode=disable",
+		DSN:                  dns,
 		PreferSimpleProtocol: true,
 	}), &gorm.Config{})
 

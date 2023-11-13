@@ -36,6 +36,10 @@ type Postgres struct {
 	Enabled    string
 	ReaderNode string
 	Port       string
+	Username   string
+	Password   string
+	Database   string
+	SslEnabled string
 }
 
 var PostgresSetting = &Postgres{}
@@ -67,6 +71,7 @@ func SetUp(path string) {
 	mapTo("server", ServerSetting)
 	mapTo("kafka", KafkaSetting)
 	mapTo("mongo", MongoSetting)
+	mapTo("source-postgres", PostgresSetting)
 }
 
 func mapTo(section string, v interface{}) {
