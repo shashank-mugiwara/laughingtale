@@ -9,6 +9,7 @@ import (
 	"github.com/shashank-mugiwara/laughingtale/client"
 	"github.com/shashank-mugiwara/laughingtale/logger"
 	"github.com/shashank-mugiwara/laughingtale/pkg/type_config"
+	"github.com/shashank-mugiwara/laughingtale/pkg/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -33,8 +34,14 @@ func pollDataFromSourceAndIngestToTarget(sourceConfig type_config.SourceConfig) 
 		return
 	}
 
-	query := "select " + sourceConfig.PrimaryKey + " as _id, " + listOfFields + " FROM " + sourceConfig.DbSchema + "." + sourceConfig.TableName + " WHERE " +
-		sourceConfig.FilterConfig.WhereQuery + " LIMIT " + sourceConfig.FilterConfig.Limit + ";"
+	var query string
+
+	if !utils.IsBlank(sourceConfig.FilterConfig.WhereQuery) {
+		query = "select " + sourceConfig.PrimaryKey + " as _id, " + listOfFields + " FROM " + sourceConfig.DbSchema + "." + sourceConfig.TableName + " WHERE " +
+			sourceConfig.FilterConfig.WhereQuery + " LIMIT " + sourceConfig.FilterConfig.Limit + ";"
+	} else {
+		query = "select " + sourceConfig.PrimaryKey + " as _id, " + listOfFields + " FROM " + sourceConfig.DbSchema + "." + sourceConfig.TableName + " LIMIT " + sourceConfig.FilterConfig.Limit + ";"
+	}
 
 	logger.GetLaughingTaleLogger().Info("Executing query: ", query)
 

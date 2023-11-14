@@ -49,6 +49,18 @@ func main() {
 					Limit:      "100000",
 				},
 			},
+			{
+				TargetDatabaseName:   "groot",
+				TargetCollectionName: "loan_product",
+				DbSchema:             "groot",
+				TableName:            "loan_product",
+				PrimaryKey:           "id",
+				PrimaryKeyType:       "int64",
+				ColumnList:           []string{},
+				FilterConfig: type_config.FilterConfig{
+					Limit: "100000",
+				},
+			},
 		},
 	}
 
