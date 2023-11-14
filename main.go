@@ -61,6 +61,18 @@ func main() {
 					Limit: "100000",
 				},
 			},
+			{
+				TargetDatabaseName:   "heimdall",
+				TargetCollectionName: "roles",
+				DbSchema:             "heimdall",
+				TableName:            "roles",
+				PrimaryKey:           "id",
+				PrimaryKeyType:       "int64",
+				ColumnList:           []string{},
+				FilterConfig: type_config.FilterConfig{
+					Limit: "100000",
+				},
+			},
 		},
 	}
 
