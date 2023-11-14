@@ -6,11 +6,14 @@ type FilterConfig struct {
 }
 
 type SourceConfig struct {
-	DbSchema     string       `json:"dbSchema"`
-	TableName    string       `json:"tableName"`
-	PrimaryKey   string       `json:"primaryKey"`
-	ColumnList   []string     `json:"columnList"`
-	FilterConfig FilterConfig `json:"filterConfig"`
+	TargetCollectionName string       `json:"targetCollectionName"`
+	TargetDatabaseName   string       `json:"targetDatabaseName"`
+	DbSchema             string       `json:"dbSchema"`
+	TableName            string       `json:"tableName"`
+	PrimaryKey           string       `json:"primaryKey"`
+	PrimaryKeyType       string       `json:"primaryKeyType"`
+	ColumnList           []string     `json:"columnList"`
+	FilterConfig         FilterConfig `json:"filterConfig"`
 }
 
 type SourceConfigContainer struct {

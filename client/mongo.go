@@ -26,8 +26,16 @@ func InitMongodb() {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	client, err := mongo.Connect(ctx, options.Client().
-		ApplyURI("mongodb://"+conf.MongoSetting.MasterNode+":"+conf.MongoSetting.Port))
+
+	creds := options.Credential{
+		Username: "root",
+		Password: "password",
+	}
+	clientConfig := options.Client().
+		ApplyURI("mongodb://" + conf.MongoSetting.MasterNode + ":" + conf.MongoSetting.Port)
+	clientConfig.SetAuth(creds)
+
+	client, err := mongo.Connect(ctx, clientConfig)
 
 	if err != nil {
 		log.Fatalln("Unable to connect to MongoDB node.")
