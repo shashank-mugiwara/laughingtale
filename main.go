@@ -20,61 +20,7 @@ func main() {
 	initialize.InitRoutes()
 	initialize.InitClients()
 
-	sourceConfigContainer := &type_config.SourceConfigContainer{
-		Identifier: "randomIdentifier",
-		SourceConfig: []type_config.SourceConfig{
-			{
-				TargetDatabaseName:   "shield",
-				TargetCollectionName: "app_form",
-				DbSchema:             "shield",
-				TableName:            "app_form",
-				PrimaryKey:           "id",
-				PrimaryKeyType:       "string",
-				ColumnList:           []string{},
-				FilterConfig: type_config.FilterConfig{
-					WhereQuery: "created_at >= NOW() - INTERVAL '400 days'",
-					Limit:      "100000",
-				},
-			},
-			{
-				TargetDatabaseName:   "shield",
-				TargetCollectionName: "applicant",
-				DbSchema:             "shield",
-				TableName:            "applicant",
-				PrimaryKey:           "id",
-				PrimaryKeyType:       "int64",
-				ColumnList:           []string{},
-				FilterConfig: type_config.FilterConfig{
-					WhereQuery: "created_at >= NOW() - INTERVAL '400 days'",
-					Limit:      "100000",
-				},
-			},
-			{
-				TargetDatabaseName:   "groot",
-				TargetCollectionName: "loan_product",
-				DbSchema:             "groot",
-				TableName:            "loan_product",
-				PrimaryKey:           "id",
-				PrimaryKeyType:       "int64",
-				ColumnList:           []string{},
-				FilterConfig: type_config.FilterConfig{
-					Limit: "100000",
-				},
-			},
-			{
-				TargetDatabaseName:   "heimdall",
-				TargetCollectionName: "roles",
-				DbSchema:             "heimdall",
-				TableName:            "roles",
-				PrimaryKey:           "id",
-				PrimaryKeyType:       "int64",
-				ColumnList:           []string{},
-				FilterConfig: type_config.FilterConfig{
-					Limit: "100000",
-				},
-			},
-		},
-	}
+	sourceConfigContainer := &type_config.SourceConfigContainer{}
 
 	poller.PollData(sourceConfigContainer)
 
