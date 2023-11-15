@@ -37,10 +37,10 @@ func pollDataFromSourceAndIngestToTarget(sourceConfig type_config.SourceConfig) 
 	var query string
 
 	if !utils.IsBlank(sourceConfig.FilterConfig.WhereQuery) {
-		query = "select " + sourceConfig.PrimaryKey + " as _id, " + listOfFields + " FROM " + sourceConfig.DbSchema + "." + sourceConfig.TableName + " WHERE " +
+		query = "select " + sourceConfig.PrimaryKey + " as primaryKeyId, " + listOfFields + " FROM " + sourceConfig.DbSchema + "." + sourceConfig.TableName + " WHERE " +
 			sourceConfig.FilterConfig.WhereQuery + " LIMIT " + sourceConfig.FilterConfig.Limit + ";"
 	} else {
-		query = "select " + sourceConfig.PrimaryKey + " as _id, " + listOfFields + " FROM " + sourceConfig.DbSchema + "." + sourceConfig.TableName + " LIMIT " + sourceConfig.FilterConfig.Limit + ";"
+		query = "select " + sourceConfig.PrimaryKey + " as primaryKeyId, " + listOfFields + " FROM " + sourceConfig.DbSchema + "." + sourceConfig.TableName + " LIMIT " + sourceConfig.FilterConfig.Limit + ";"
 	}
 
 	logger.GetLaughingTaleLogger().Info("Executing query: ", query)
@@ -94,7 +94,7 @@ func ingestDataToTarget(sourceConfig type_config.SourceConfig, resultList []inte
 	diff := end - start
 	fmt.Printf("Time for preparing the insert/updates for BulkWrites: %d ms\n", diff)
 
-	opts := options.BulkWrite()
+	opts := options.BulkWrite().SetOrdered(false)
 
 	start = time.Now().UnixNano() / int64(time.Millisecond)
 	_, insertErr := collection.BulkWrite(mongoCtx, models, opts)
