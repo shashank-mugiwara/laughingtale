@@ -2,6 +2,7 @@ package sourceconfig
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/shashank-mugiwara/laughingtale/db"
 )
 
 type Handler interface {
@@ -13,6 +14,6 @@ type Logger interface {
 }
 
 func RegisterRoutes(router *fiber.App, logger Logger) {
-	h := NewHandler(logger)
-	router.Get("/api/v1/sourceConfig/:name", h.AddSourceConfig)
+	h := NewHandler(logger, db.GetlaughingtaleDb())
+	router.Post("/api/v1/loaderSourceConfig", h.AddSourceConfig)
 }

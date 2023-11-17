@@ -1,4 +1,4 @@
-package type_config
+package type_configs
 
 type FilterConfig struct {
 	WhereQuery string `json:"whereQuery"`
@@ -16,7 +16,7 @@ type SourceConfig struct {
 	FilterConfig         FilterConfig `json:"filterConfig"`
 }
 
-type SourceConfigContainer struct {
-	Identifier   string         `json:"identifier"`
-	SourceConfig []SourceConfig `json:"sourceConfig" gorm:"type:jsonb;default:'[]';not null"`
+type SourceConfigs struct {
+	Identifier   string         `json:"identifier" validate:"required"`
+	SourceConfig []SourceConfig `json:"sourceConfig" gorm:"type:jsonb;default:'[]';not null" validate:"required"`
 }
