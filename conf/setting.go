@@ -7,11 +7,16 @@ import (
 )
 
 type Application struct {
-	RunType   string
-	IsEnvProd bool
+	RunType string
 }
 
 var ApplicationSetting = &Application{}
+
+type AWS struct {
+	Region string
+}
+
+var AWSSetting = &AWS{}
 
 type Server struct {
 	RunMode  string
@@ -33,13 +38,15 @@ type Mongo struct {
 }
 
 type Postgres struct {
-	Enabled    string
-	ReaderNode string
-	Port       string
-	Username   string
-	Password   string
-	Database   string
-	SslEnabled string
+	Enabled        string
+	MasterNodeHost string
+	ReaderNodeHost string
+	Port           string
+	Username       string
+	Password       string
+	Database       string
+	SslEnabled     string
+	TablePrefix    string
 }
 
 var PostgresSetting = &Postgres{}
@@ -72,6 +79,7 @@ func SetUp(path string) {
 	mapTo("kafka", KafkaSetting)
 	mapTo("mongo", MongoSetting)
 	mapTo("source-postgres", PostgresSetting)
+	mapTo("aws", AWSSetting)
 }
 
 func mapTo(section string, v interface{}) {

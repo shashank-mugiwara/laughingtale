@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/shashank-mugiwara/laughingtale/client"
+	"github.com/shashank-mugiwara/laughingtale/db"
 	"github.com/shashank-mugiwara/laughingtale/logger"
 	"github.com/shashank-mugiwara/laughingtale/pkg/type_config"
 	"github.com/shashank-mugiwara/laughingtale/pkg/utils"
@@ -46,7 +47,8 @@ func pollDataFromSourceAndIngestToTarget(sourceConfig type_config.SourceConfig) 
 	logger.GetLaughingTaleLogger().Info("Executing query: ", query)
 
 	start := time.Now().UnixNano() / int64(time.Millisecond)
-	rows, err := client.GetPostgresDb().Raw(query).Rows()
+
+	rows, err := db.GetlaughingtaleDb().Raw(query).Rows()
 	defer rows.Close()
 
 	end := time.Now().UnixNano() / int64(time.Millisecond)

@@ -1,4 +1,4 @@
-package cacheconfig
+package sourceconfig
 
 import (
 	"github.com/gofiber/fiber/v2"
@@ -14,5 +14,5 @@ type Logger interface {
 
 func RegisterRoutes(router *fiber.App, logger Logger) {
 	h := NewHandler(logger)
-	router.Get("/api/v1/healthCheck", h.AddSourceConfig)
+	router.Get("/api/v1/sourceConfig/:name", h.AddSourceConfig)
 }

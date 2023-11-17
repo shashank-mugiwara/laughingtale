@@ -18,5 +18,5 @@ type SourceConfig struct {
 
 type SourceConfigContainer struct {
 	Identifier   string         `json:"identifier"`
-	SourceConfig []SourceConfig `json:"sourceConfig"`
+	SourceConfig []SourceConfig `json:"sourceConfig" gorm:"type:jsonb;default:'[]';not null"`
 }
