@@ -7,12 +7,12 @@ type handler struct {
 }
 
 func NewHandler(logger Logger) Handler {
-	return &handler{
+	return handler{
 		Logger: logger,
 	}
 }
 
-func (h *handler) HealthCheck(ctx *fiber.Ctx) error {
+func (h handler) HealthCheck(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"status": "healthy",
 	})
