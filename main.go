@@ -15,8 +15,8 @@ func main() {
 	initialize.InitConfig()
 	conf.InitEngine()
 	app := conf.GetLaughingTaleEngine()
-	initialize.InitRoutes()
 	initialize.InitClients()
+	initialize.InitRoutes()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)

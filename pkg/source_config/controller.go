@@ -11,6 +11,8 @@ type Handler interface {
 
 type Logger interface {
 	Info(args ...interface{})
+	Error(args ...interface{})
+	Debug(args ...interface{})
 }
 
 func RegisterRoutes(router *fiber.App, logger Logger) {

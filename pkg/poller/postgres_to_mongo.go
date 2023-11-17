@@ -16,7 +16,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func PollData(sourceConfig *type_configs.SourceConfigs) {
+func PollData(sourceConfig *type_configs.SourceConfigsDto) {
 	var lstOfSources []string
 	for _, sc := range sourceConfig.SourceConfig {
 		lstOfSources = append(lstOfSources, sc.DbSchema+"."+sc.TableName)
