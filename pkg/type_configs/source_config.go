@@ -29,6 +29,7 @@ type SourceConfigsDto struct {
 type SourceConfigs struct {
 	Identifier   string `json:"identifier" validate:"required" gorm:"primaryKey,index"`
 	SourceConfig JSONB  `json:"sourceConfig" gorm:"type:jsonb;default:'[]';not null" validate:"required"`
+	Type         string `json:"type"`
 }
 
 type JSONB map[string]interface{}
