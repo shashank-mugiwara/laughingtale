@@ -1,6 +1,10 @@
 package type_common
 
-import "github.com/go-playground/validator/v10"
+import (
+	"fmt"
+
+	"github.com/go-playground/validator/v10"
+)
 
 type ErrorResponse struct {
 	Error       bool
@@ -27,7 +31,7 @@ func GetLaughingTaleValidator() *XValidator {
 	return myValidator
 }
 
-func (v XValidator) Validate(data interface{}) []ErrorResponse {
+func (v XValidator) Validate(data interface{}) []string {
 	validationErrors := []ErrorResponse{}
 
 	errs := validate.Struct(data)
@@ -44,5 +48,15 @@ func (v XValidator) Validate(data interface{}) []ErrorResponse {
 		}
 	}
 
-	return validationErrors
+	errMsgs := make([]string, 0)
+	for _, err := range validationErrors {
+		errMsgs = append(errMsgs, fmt.Sprintf(
+			"[%s]: '%v' | Needs to implement '%s'",
+			err.FailedField,
+			err.Value,
+			err.Tag,
+		))
+	}
+
+	return errMsgs
 }
