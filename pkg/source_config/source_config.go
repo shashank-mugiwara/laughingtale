@@ -49,7 +49,7 @@ func (h handler) AddLoaderSourceConfig(c *fiber.Ctx) error {
 
 	sourceConfigs := type_configs.SourceConfigs{
 		Identifier:   sourceConfigsDto.Identifier,
-		SourceConfig: type_configs.JSONB{"configList": sourceConfigList},
+		SourceConfig: sourceConfigList,
 		Type:         "loader",
 	}
 	if result := h.DB.Create(&sourceConfigs); result.Error != nil {
@@ -188,7 +188,7 @@ func (h handler) UpdateLoaderSourceConfig(c *fiber.Ctx) error {
 
 	sourceConfigs := type_configs.SourceConfigs{
 		Identifier:   sourceConfigsDto.Identifier,
-		SourceConfig: type_configs.JSONB{"configList": sourceConfigList},
+		SourceConfig: sourceConfigList,
 		Type:         "loader",
 	}
 	if result := h.DB.Model(&sourceConfigs).Where("identifier = ?", configName).Updates(&sourceConfigs); result.Error != nil {

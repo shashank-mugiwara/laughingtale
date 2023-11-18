@@ -1,10 +1,5 @@
 package type_configs
 
-import (
-	"database/sql/driver"
-	"encoding/json"
-)
-
 type FilterConfig struct {
 	WhereQuery string `json:"whereQuery"`
 	Limit      string `json:"limit"`
@@ -27,21 +22,7 @@ type SourceConfigsDto struct {
 }
 
 type SourceConfigs struct {
-	Identifier   string `json:"identifier" validate:"required" gorm:"primaryKey,index"`
-	SourceConfig JSONB  `json:"sourceConfig" gorm:"type:jsonb;default:'[]';not null" validate:"required"`
-	Type         string `json:"type"`
-}
-
-type JSONB map[string]interface{}
-
-func (j JSONB) Value() (driver.Value, error) {
-	valueString, err := json.Marshal(j)
-	return string(valueString), err
-}
-
-func (j *JSONB) Scan(value interface{}) error {
-	if err := json.Unmarshal(value.([]byte), &j); err != nil {
-		return err
-	}
-	return nil
+	Identifier   string         `json:"identifier" validate:"required" gorm:"primaryKey,index"`
+	SourceConfig []SourceConfig `json:"sourceConfig" gorm:"serializer:json;not null" validate:"required"`
+	Type         string         `json:"type"`
 }
