@@ -16,7 +16,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func pollDataFromSourceAndIngestToTarget(sourceConfig type_configs.SourceConfig) {
+func PollDataFromSourceAndIngestToTarget(identifier string, sourceConfig type_configs.SourceConfig) {
 	listOfFields, err := generateListOfFields(sourceConfig)
 	if err != nil {
 		logger.GetLaughingTaleLogger().Error("Failed to poll data from database.")
@@ -50,14 +50,16 @@ func pollDataFromSourceAndIngestToTarget(sourceConfig type_configs.SourceConfig)
 		return
 	}
 
-	go ingestDataToTarget(sourceConfig, resultList)
+	go ingestDataToTarget(identifier, sourceConfig, resultList)
 }
 
-func ingestDataToTarget(sourceConfig type_configs.SourceConfig, resultList []interface{}) {
+func ingestDataToTarget(identifier string, sourceConfig type_configs.SourceConfig, resultList []interface{}) {
 	mongoCtx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	// For now we are using on-container mongodb as target database
-	database := client.GetMongoClient().Database(sourceConfig.TargetDatabaseName)
+
+	targetDatabaseName := identifier
+	database := client.GetMongoClient().Database(targetDatabaseName)
 	collection := database.Collection(sourceConfig.TargetCollectionName)
 
 	start := time.Now().UnixNano() / int64(time.Millisecond)
@@ -82,6 +84,7 @@ func ingestDataToTarget(sourceConfig type_configs.SourceConfig, resultList []int
 		}
 
 	}
+
 	end := time.Now().UnixNano() / int64(time.Millisecond)
 	diff := end - start
 	fmt.Printf("Time for preparing the insert/updates for BulkWrites: %d ms\n", diff)

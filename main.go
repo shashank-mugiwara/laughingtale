@@ -9,6 +9,7 @@ import (
 
 	"github.com/shashank-mugiwara/laughingtale/conf"
 	"github.com/shashank-mugiwara/laughingtale/initialize"
+	"github.com/shashank-mugiwara/laughingtale/pkg/poller"
 )
 
 func main() {
@@ -17,6 +18,7 @@ func main() {
 	app := conf.GetLaughingTaleEngine()
 	initialize.InitClients()
 	initialize.InitRoutes()
+	poller.InitMasterPoller()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)

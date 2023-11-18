@@ -1,13 +1,21 @@
 package poller
 
 import (
+	"time"
+
 	"github.com/shashank-mugiwara/laughingtale/db"
 	"github.com/shashank-mugiwara/laughingtale/logger"
+	"github.com/shashank-mugiwara/laughingtale/pkg/ingest"
 	"github.com/shashank-mugiwara/laughingtale/pkg/type_configs"
 )
 
 func InitMasterPoller() {
-
+	go func() {
+		for true {
+			GetAllLoaderSourceConfigs()
+			time.Sleep(1 * time.Minute)
+		}
+	}()
 }
 
 func GetAllLoaderSourceConfigs() {
@@ -25,13 +33,14 @@ func GetAllLoaderSourceConfigs() {
 		logger.GetLaughingTaleLogger().Info("Number of SourceConfigs found: ", result.RowsAffected)
 	}
 
+	for _, scfg := range loaderScenarioConfigs {
+		PollData(scfg)
+	}
 }
 
-func PollData(sourceConfig *type_configs.SourceConfigsDto) {
-	var lstOfSources []string
-	for _, sc := range sourceConfig.SourceConfig {
-		lstOfSources = append(lstOfSources, sc.DbSchema+"."+sc.TableName)
+func PollData(loaderSourceConfigs type_configs.SourceConfigs) {
+	identifier := loaderSourceConfigs.Identifier
+	for _, scfg := range loaderSourceConfigs.SourceConfig {
+		go ingest.PollDataFromSourceAndIngestToTarget(identifier, scfg)
 	}
-
-	logger.GetLaughingTaleLogger().Info("List of sources: ", lstOfSources)
 }
