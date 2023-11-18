@@ -49,30 +49,32 @@ func (h handler) AddLoaderSourceConfig(c *fiber.Ctx) error {
 		}
 	}
 
-	strategyType := sourceConfigsDto.PollerConfig.PollingStrategy
-	if utils.IsBlank(strategyType) {
-		invalidStrategyError := type_common.DatabaseError{
-			StatusCode: fiber.ErrBadRequest.Code,
-			Message:    "pollingStrategy cannot be blank",
+	for _, scfg := range sourceConfigList {
+		strategyType := scfg.PollerConfig.PollingStrategy
+		if utils.IsBlank(strategyType) {
+			invalidStrategyError := type_common.DatabaseError{
+				StatusCode: fiber.ErrBadRequest.Code,
+				Message:    "pollingStrategy cannot be blank",
+			}
+
+			return c.Status(fiber.ErrBadRequest.Code).JSON(invalidStrategyError)
 		}
 
-		return c.Status(fiber.ErrBadRequest.Code).JSON(invalidStrategyError)
-	}
-
-	if _, ok := globals.PollerStrategyMap[strategyType]; !ok {
-		invalidStrategyError := type_common.DatabaseError{
-			StatusCode: fiber.ErrBadRequest.Code,
-			Message:    "Invalid pollingStrategy",
+		if _, ok := globals.PollerStrategyMap[strategyType]; !ok {
+			invalidStrategyError := type_common.DatabaseError{
+				StatusCode: fiber.ErrBadRequest.Code,
+				Message:    "Invalid pollingStrategy",
+			}
+			return c.Status(fiber.ErrBadRequest.Code).JSON(invalidStrategyError)
 		}
-		return c.Status(fiber.ErrBadRequest.Code).JSON(invalidStrategyError)
 	}
 
 	sourceConfigs := type_configs.SourceConfigs{
 		Identifier:   sourceConfigsDto.Identifier,
 		SourceConfig: sourceConfigList,
 		Type:         "loader",
-		PollerConfig: sourceConfigsDto.PollerConfig,
 	}
+
 	if result := h.DB.Create(&sourceConfigs); result.Error != nil {
 		h.Logger.Debug("Unable to create source loader config. Error is: ", result.Error.Error())
 		dbErr := type_common.DatabaseError{
@@ -207,30 +209,32 @@ func (h handler) UpdateLoaderSourceConfig(c *fiber.Ctx) error {
 		}
 	}
 
-	strategyType := sourceConfigsDto.PollerConfig.PollingStrategy
-	if utils.IsBlank(strategyType) {
-		invalidStrategyError := type_common.DatabaseError{
-			StatusCode: fiber.ErrBadRequest.Code,
-			Message:    "pollingStrategy cannot be blank",
+	for _, scfg := range sourceConfigList {
+		strategyType := scfg.PollerConfig.PollingStrategy
+		if utils.IsBlank(strategyType) {
+			invalidStrategyError := type_common.DatabaseError{
+				StatusCode: fiber.ErrBadRequest.Code,
+				Message:    "pollingStrategy cannot be blank",
+			}
+
+			return c.Status(fiber.ErrBadRequest.Code).JSON(invalidStrategyError)
 		}
 
-		return c.Status(fiber.ErrBadRequest.Code).JSON(invalidStrategyError)
-	}
-
-	if _, ok := globals.PollerStrategyMap[strategyType]; !ok {
-		invalidStrategyError := type_common.DatabaseError{
-			StatusCode: fiber.ErrBadRequest.Code,
-			Message:    "Invalid pollingStrategy",
+		if _, ok := globals.PollerStrategyMap[strategyType]; !ok {
+			invalidStrategyError := type_common.DatabaseError{
+				StatusCode: fiber.ErrBadRequest.Code,
+				Message:    "Invalid pollingStrategy",
+			}
+			return c.Status(fiber.ErrBadRequest.Code).JSON(invalidStrategyError)
 		}
-		return c.Status(fiber.ErrBadRequest.Code).JSON(invalidStrategyError)
 	}
 
 	sourceConfigs := type_configs.SourceConfigs{
 		Identifier:   sourceConfigsDto.Identifier,
 		SourceConfig: sourceConfigList,
 		Type:         "loader",
-		PollerConfig: sourceConfigsDto.PollerConfig,
 	}
+
 	if result := h.DB.Model(&sourceConfigs).Where("identifier = ?", configName).Updates(&sourceConfigs); result.Error != nil {
 		h.Logger.Debug("Unable to create source loader config. Error is: ", result.Error.Error())
 		dbErr := type_common.DatabaseError{

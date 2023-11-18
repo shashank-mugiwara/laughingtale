@@ -13,6 +13,7 @@ type SourceConfig struct {
 	PrimaryKeyType       string       `json:"primaryKeyType" validate:"required"`
 	ColumnList           []string     `json:"columnList" validate:"required"`
 	FilterConfig         FilterConfig `json:"filterConfig" validate:"required"`
+	PollerConfig         PollerConfig `json:"pollerConfig" validate:"required"`
 }
 
 type PollerConfig struct {
@@ -22,12 +23,10 @@ type PollerConfig struct {
 type SourceConfigsDto struct {
 	Identifier   string         `json:"identifier" validate:"required"`
 	SourceConfig []SourceConfig `json:"sourceConfig" gorm:"type:jsonb;default:'[]';not null" validate:"required"`
-	PollerConfig PollerConfig   `json:"pollerConfig" validate:"required"`
 }
 
 type SourceConfigs struct {
 	Identifier   string         `json:"identifier" validate:"required" gorm:"primaryKey,index"`
 	SourceConfig []SourceConfig `json:"sourceConfig" gorm:"serializer:json;not null" validate:"required"`
 	Type         string         `json:"type"`
-	PollerConfig PollerConfig   `json:"pollerConfig" gorm:"serializer:json" validate:"required"`
 }
