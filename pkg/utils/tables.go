@@ -19,7 +19,7 @@ func ListTables(schema string) []string {
 }
 
 func GetRecordCount(sourceConfig type_configs.SourceConfig) int {
-	query := "SELECT COUNT(" + sourceConfig.PrimaryKey + ") as rec_count FROM " + sourceConfig.TableName + " WHERE " + sourceConfig.FilterConfig.WhereQuery
+	query := "SELECT COUNT(" + sourceConfig.PrimaryKey + ") as rec_count FROM " + sourceConfig.DbSchema + "." + sourceConfig.TableName + " WHERE " + sourceConfig.FilterConfig.WhereQuery
 	recordNumberResult := RecordCountResult{RecCount: 0}
 	db.GetlaughingtaleDb().Raw(query).Scan(&recordNumberResult)
 	logger.GetLaughingTaleLogger().Info("Found ", recordNumberResult.RecCount, " number of records from table: ", sourceConfig.TableName)
