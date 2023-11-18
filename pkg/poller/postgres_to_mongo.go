@@ -7,15 +7,16 @@ import (
 	"time"
 
 	"github.com/shashank-mugiwara/laughingtale/client"
+	"github.com/shashank-mugiwara/laughingtale/db"
 	"github.com/shashank-mugiwara/laughingtale/logger"
-	"github.com/shashank-mugiwara/laughingtale/pkg/type_config"
+	"github.com/shashank-mugiwara/laughingtale/pkg/type_configs"
 	"github.com/shashank-mugiwara/laughingtale/pkg/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func PollData(sourceConfig *type_config.SourceConfigContainer) {
+func PollData(sourceConfig *type_configs.SourceConfigsDto) {
 	var lstOfSources []string
 	for _, sc := range sourceConfig.SourceConfig {
 		lstOfSources = append(lstOfSources, sc.DbSchema+"."+sc.TableName)
@@ -27,7 +28,7 @@ func PollData(sourceConfig *type_config.SourceConfigContainer) {
 	}
 }
 
-func pollDataFromSourceAndIngestToTarget(sourceConfig type_config.SourceConfig) {
+func pollDataFromSourceAndIngestToTarget(sourceConfig type_configs.SourceConfig) {
 	listOfFields, err := generateListOfFields(sourceConfig)
 	if err != nil {
 		logger.GetLaughingTaleLogger().Error("Failed to poll data from database.")
@@ -46,7 +47,8 @@ func pollDataFromSourceAndIngestToTarget(sourceConfig type_config.SourceConfig) 
 	logger.GetLaughingTaleLogger().Info("Executing query: ", query)
 
 	start := time.Now().UnixNano() / int64(time.Millisecond)
-	rows, err := client.GetPostgresDb().Raw(query).Rows()
+
+	rows, err := db.GetlaughingtaleDb().Raw(query).Rows()
 	defer rows.Close()
 
 	end := time.Now().UnixNano() / int64(time.Millisecond)
@@ -61,7 +63,7 @@ func pollDataFromSourceAndIngestToTarget(sourceConfig type_config.SourceConfig) 
 	go ingestDataToTarget(sourceConfig, resultList)
 }
 
-func ingestDataToTarget(sourceConfig type_config.SourceConfig, resultList []interface{}) {
+func ingestDataToTarget(sourceConfig type_configs.SourceConfig, resultList []interface{}) {
 	mongoCtx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	// For now we are using on-container mongodb as target database
@@ -108,7 +110,7 @@ func ingestDataToTarget(sourceConfig type_config.SourceConfig, resultList []inte
 	fmt.Printf("Time taken for ingesting the documents: %d ms\n", diff)
 }
 
-func generateListOfFields(sourceConfig type_config.SourceConfig) (string, error) {
+func generateListOfFields(sourceConfig type_configs.SourceConfig) (string, error) {
 
 	if len(sourceConfig.ColumnList) < 1 {
 		logger.GetLaughingTaleLogger().Info("No columns specified, selecting all columns by default")
