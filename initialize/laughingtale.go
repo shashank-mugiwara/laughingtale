@@ -24,4 +24,5 @@ func InitClients() {
 	client.InitKafkaConsumer()
 	client.InitMongodb()
 	db.InitGormPool()
+	client.InitRedisClient()
 }

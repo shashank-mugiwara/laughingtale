@@ -49,6 +49,13 @@ type Postgres struct {
 	TablePrefix    string
 }
 
+type Redis struct {
+	Host string
+	Port string
+}
+
+var RedisSetting = &Redis{}
+
 var PostgresSetting = &Postgres{}
 
 var ServerSetting = &Server{}
@@ -80,6 +87,7 @@ func SetUp(path string) {
 	mapTo("mongo", MongoSetting)
 	mapTo("source-postgres", PostgresSetting)
 	mapTo("aws", AWSSetting)
+	mapTo("redis", RedisSetting)
 }
 
 func mapTo(section string, v interface{}) {
