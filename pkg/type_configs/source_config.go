@@ -6,6 +6,7 @@ type FilterConfig struct {
 }
 
 type SourceConfig struct {
+	Version              string       `json:"version" validate:"required"`
 	TargetCollectionName string       `json:"targetCollectionName" validate:"required"`
 	DbSchema             string       `json:"dbSchema" validate:"required"`
 	TableName            string       `json:"tableName" validate:"required"`

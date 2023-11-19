@@ -14,12 +14,8 @@ import (
 )
 
 func InitMasterPoller() {
-	go func() {
-		for true {
-			GetAllLoaderSourceConfigs()
-			time.Sleep(1 * time.Minute)
-		}
-	}()
+	// First time load all data from given source config
+	GetAllLoaderSourceConfigs()
 }
 
 func GetAllLoaderSourceConfigs() {
@@ -74,6 +70,13 @@ func ProcessEachSourceConfig(identifier string, sourceConfig type_configs.Source
 
 	redisErr := client.GetRedisClient().Set(ctx, entryKey, time.Now().UTC().String(), 0).Err()
 	if redisErr != nil {
-		logger.GetLaughingTaleLogger().Error("Unable to set key to redis. Please check if redis instance is healty.")
+		logger.GetLaughingTaleLogger().Error("Unable to set entryKey to redis. Please check if redis instance is healty.")
 	}
+
+	lastUpdatedAtKey := utils.GetDatabaseNameWithCollectionName(identifier, sourceConfig)
+	redisErr = client.GetRedisClient().Set(ctx, lastUpdatedAtKey, time.Now().UTC().String(), 0).Err()
+	if redisErr != nil {
+		logger.GetLaughingTaleLogger().Error("Unable to set lastUpdatedAtKey to redis. Please check if redis instance is healty.")
+	}
+
 }

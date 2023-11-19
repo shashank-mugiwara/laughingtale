@@ -8,5 +8,9 @@ import (
 
 func GetSourceConfigStringRepresentation(identifier string, sourceConfig type_configs.SourceConfig) string {
 	return identifier + ":" + sourceConfig.DbSchema + ":" + sourceConfig.TableName + ":" + sourceConfig.PrimaryKey + ":" + identifier + ":" + sourceConfig.TargetCollectionName + ":" +
-		strings.Join(sourceConfig.ColumnList, ",") + ":" + sourceConfig.PollerConfig.PollingStrategy + ":" + sourceConfig.FilterConfig.WhereQuery + ":" + sourceConfig.FilterConfig.Limit
+		strings.Join(sourceConfig.ColumnList, ",") + ":" + sourceConfig.PollerConfig.PollingStrategy + ":" + sourceConfig.FilterConfig.WhereQuery + ":" + sourceConfig.FilterConfig.Limit + sourceConfig.Version
+}
+
+func GetDatabaseNameWithCollectionName(identifier string, sourceConfig type_configs.SourceConfig) string {
+	return identifier + ":" + sourceConfig.TableName + ":" + sourceConfig.Version
 }
