@@ -1,13 +1,16 @@
 package poller
 
 import (
+	"context"
 	"time"
 
+	"github.com/shashank-mugiwara/laughingtale/client"
 	"github.com/shashank-mugiwara/laughingtale/db"
 	"github.com/shashank-mugiwara/laughingtale/logger"
 	"github.com/shashank-mugiwara/laughingtale/pkg/factory"
 	"github.com/shashank-mugiwara/laughingtale/pkg/ingest"
 	"github.com/shashank-mugiwara/laughingtale/pkg/type_configs"
+	"github.com/shashank-mugiwara/laughingtale/pkg/utils"
 )
 
 func InitMasterPoller() {
@@ -43,8 +46,21 @@ func GetAllLoaderSourceConfigs() {
 }
 
 func ProcessEachSourceConfig(identifier string, sourceConfig type_configs.SourceConfig) {
-	pollingStrategy := sourceConfig.PollerConfig.PollingStrategy
-	poller, err := factory.GetStrategyFactory(pollingStrategy)
+
+	ctx := context.Background()
+	entryKey := utils.GetSourceConfigStringRepresentation(identifier, sourceConfig)
+	isInitialLoadReady, keyExistsErr := client.GetRedisClient().Get(ctx, entryKey).Result()
+
+	if keyExistsErr != nil {
+		logger.GetLaughingTaleLogger().Info(keyExistsErr)
+	}
+
+	if !utils.IsBlank(isInitialLoadReady) {
+		return
+	}
+
+	// First time its always SIMPLE strategy based polling
+	poller, err := factory.GetStrategyFactory("SIMPLE")
 	if err != nil {
 		logger.GetLaughingTaleLogger().Error(err.Error())
 	}
@@ -55,4 +71,9 @@ func ProcessEachSourceConfig(identifier string, sourceConfig type_configs.Source
 	}
 
 	ingest.IngestPostgresToMongo(identifier, sourceConfig, resultList)
+
+	redisErr := client.GetRedisClient().Set(ctx, entryKey, time.Now().UTC().String(), 0).Err()
+	if redisErr != nil {
+		logger.GetLaughingTaleLogger().Error("Unable to set key to redis. Please check if redis instance is healty.")
+	}
 }
