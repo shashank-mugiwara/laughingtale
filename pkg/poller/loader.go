@@ -42,8 +42,13 @@ func GetAllLoaderSourceConfigs() {
 }
 
 func ProcessEachSourceConfig(identifier string, sourceConfig type_configs.SourceConfig) {
-
 	ctx := context.Background()
+	lastUpdatedAtKey := utils.GetDatabaseNameWithCollectionName(identifier, sourceConfig)
+	redisErr := client.GetRedisClient().Set(ctx, lastUpdatedAtKey, time.Now().Local().String(), 0).Err()
+	if redisErr != nil {
+		logger.GetLaughingTaleLogger().Error("Unable to set lastUpdatedAtKey to redis. Please check if redis instance is healty.")
+	}
+
 	entryKey := utils.GetSourceConfigStringRepresentation(identifier, sourceConfig)
 	isInitialLoadReady, keyExistsErr := client.GetRedisClient().Get(ctx, entryKey).Result()
 
@@ -52,6 +57,31 @@ func ProcessEachSourceConfig(identifier string, sourceConfig type_configs.Source
 	}
 
 	if !utils.IsBlank(isInitialLoadReady) {
+		incrementalPoller, factErr := factory.GetStrategyFactory("SIMPLE_INCREMENTAL")
+		if factErr != nil {
+			logger.GetLaughingTaleLogger().Error("Failed to get instance of simple_incremental poller from factory. Returning")
+			return
+		}
+
+		go func() {
+			for true {
+				resultList, resultErr := incrementalPoller.Poll(identifier, sourceConfig)
+				if resultErr != nil {
+					logger.GetLaughingTaleLogger().Error("Failed to get latest incremental changes from database.")
+				}
+
+				if len(resultList) < 1 {
+					time.Sleep(30 * time.Second)
+					logger.GetLaughingTaleLogger().Info("No incremental changes detected.")
+					continue
+				}
+
+				logger.GetLaughingTaleLogger().Info("Detected ", len(resultList), " changes. Upserting the changes to on-container db")
+				ingest.IngestPostgresToMongo(identifier, sourceConfig, resultList)
+				time.Sleep(30 * time.Second)
+			}
+		}()
+
 		return
 	}
 
@@ -68,15 +98,8 @@ func ProcessEachSourceConfig(identifier string, sourceConfig type_configs.Source
 
 	ingest.IngestPostgresToMongo(identifier, sourceConfig, resultList)
 
-	redisErr := client.GetRedisClient().Set(ctx, entryKey, time.Now().UTC().String(), 0).Err()
+	redisErr = client.GetRedisClient().Set(ctx, entryKey, time.Now().Local().String(), 0).Err()
 	if redisErr != nil {
 		logger.GetLaughingTaleLogger().Error("Unable to set entryKey to redis. Please check if redis instance is healty.")
 	}
-
-	lastUpdatedAtKey := utils.GetDatabaseNameWithCollectionName(identifier, sourceConfig)
-	redisErr = client.GetRedisClient().Set(ctx, lastUpdatedAtKey, time.Now().UTC().String(), 0).Err()
-	if redisErr != nil {
-		logger.GetLaughingTaleLogger().Error("Unable to set lastUpdatedAtKey to redis. Please check if redis instance is healty.")
-	}
-
 }
