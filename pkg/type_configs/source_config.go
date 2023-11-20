@@ -18,7 +18,8 @@ type SourceConfig struct {
 }
 
 type PollerConfig struct {
-	PollingStrategy string `json:"pollingStrategy"`
+	PollingStrategy              string `json:"pollingStrategy"`
+	DeltaUpdateIntervalInMinutes string `json:"deltaUpdateIntervalInMinutes"`
 }
 
 type SourceConfigsDto struct {

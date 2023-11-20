@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/shashank-mugiwara/laughingtale/client"
@@ -21,7 +22,7 @@ type SimpleIncrementalStrategy struct {
 func newSimpleIncrementalStrategyPoller() IPollerStrategy {
 	return &SimpleIncrementalStrategy{
 		PollerStrategy: PollerStrategy{
-			WhereQueryPrefix:         "updated_at > NOW() - INTERVAL '3 minutes'",
+			WhereQueryPrefix:         "updated_at > NOW() - INTERVAL '{incrementalPollFreq} minutes'",
 			PollerFrequencyInSeconds: 60,
 		},
 	}
@@ -60,9 +61,9 @@ func (simpleIncremental *SimpleIncrementalStrategy) Poll(identifier string, sour
 	var query string
 
 	if !utils.IsBlank(sourceConfig.FilterConfig.WhereQuery) {
-		query = "select " + sourceConfig.PrimaryKey + " as primaryKeyId, " + listOfFields + " FROM " + sourceConfig.DbSchema + "." + sourceConfig.TableName + " WHERE updated_at > NOW() - INTERVAL '3 minutes';"
+		query = "select " + sourceConfig.PrimaryKey + " as primaryKeyId, " + listOfFields + " FROM " + sourceConfig.DbSchema + "." + sourceConfig.TableName + " WHERE " + strings.Replace(simpleIncremental.WhereQueryPrefix, "{incrementalPollFreq}", sourceConfig.PollerConfig.DeltaUpdateIntervalInMinutes, 1)
 	} else {
-		query = "select " + sourceConfig.PrimaryKey + " as primaryKeyId, " + listOfFields + " FROM " + sourceConfig.DbSchema + "." + sourceConfig.TableName + " WHERE updated_at > NOW() - INTERVAL '3 minutes';"
+		query = "select " + sourceConfig.PrimaryKey + " as primaryKeyId, " + listOfFields + " FROM " + sourceConfig.DbSchema + "." + sourceConfig.TableName + " WHERE " + strings.Replace(simpleIncremental.WhereQueryPrefix, "{incrementalPollFreq}", sourceConfig.PollerConfig.DeltaUpdateIntervalInMinutes, 1)
 	}
 
 	logger.GetLaughingTaleLogger().Info("Executing query: ", query)
