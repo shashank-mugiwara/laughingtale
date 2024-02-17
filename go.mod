@@ -11,7 +11,8 @@ require (
 	github.com/gofiber/fiber/v2 v2.50.0
 	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/jmoiron/sqlx v1.3.5
-	go.mongodb.org/mongo-driver v1.13.0
+	github.com/redis/go-redis/v9 v9.3.0
+	go.mongodb.org/mongo-driver v1.13.1
 	go.uber.org/zap v1.26.0
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028
 	gopkg.in/ini.v1 v1.67.0
